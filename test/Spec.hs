@@ -1,2 +1,8 @@
+import Test.Hspec
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = hspec $ do
+    describe "hello, world" $ do
+        it "should add for empty list" $
+            let e = "hello"
+            in e `shouldBe` "hello"
