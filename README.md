@@ -1,5 +1,7 @@
 # Sudoku Solver
 
+[![Build Status](https://travis-ci.org/danielholmes/sudoku-solver.svg?branch=master)](https://travis-ci.org/danielholmes/sudoku-solver)
+
 
 ## Development Dependencies
 
