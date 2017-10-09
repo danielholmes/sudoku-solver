@@ -1,7 +1,8 @@
-module UI (getSudokuSize, enterPuzzle) where
+module UI (getSudokuSize, solvePuzzle) where
 
 import Data.List
-import Sudoku
+import Puzzle
+import Solution
 
 stringInIntList :: String -> [Int] -> Bool
 stringInIntList _ [] = False
@@ -12,7 +13,7 @@ stringInIntList s (x:xs)
 getIntOption :: [Int] -> IO Int
 getIntOption options =
     do
-        putStrLn ("What size Sudoku Puzzle would you like? [" ++ (intercalate ", " (map show options)) ++ "]")
+        putStrLn ("What size Sudoku Puzzle would you like? [" ++ intercalate ", " (map show options) ++ "]")
         raw <- getLine
         if stringInIntList raw options
             then return (read raw)
@@ -23,5 +24,11 @@ getIntOption options =
 getSudokuSize :: IO Int
 getSudokuSize = getIntOption [4, 9]
 
-enterPuzzle :: Int -> IO Sudoku
-enterPuzzle size = return (sudoku size)
+solvePuzzle :: Int -> IO Solution
+solvePuzzle size =
+    do
+        puzzle <- enterPuzzle size
+        return (solve puzzle)
+
+enterPuzzle :: Int -> IO Puzzle
+enterPuzzle size = return (emptyPuzzle size)

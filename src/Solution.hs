@@ -1,5 +1,11 @@
-module Solution (Solution) where
+module Solution (Solution, solve, solutionPuzzle) where
 
-import Sudoku
+import Puzzle
 
-type Solution = Maybe CompletedSudoku
+data Solution = SolutionImpl Puzzle (Maybe Puzzle)
+
+solutionPuzzle :: Solution -> Puzzle
+solutionPuzzle (SolutionImpl p _) = p
+
+solve :: Puzzle -> Solution
+solve p = SolutionImpl p Nothing
