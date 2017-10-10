@@ -31,5 +31,5 @@ stack repl
 ## Tests
 
 ```bash
-stack test
+stack test --pedantic
 ```
