@@ -36,10 +36,10 @@ getEntry s =
     do
         o <- getOption options Nothing
         return (case o of
-            " " -> Empty
+            "" -> Empty
             e -> Fixed (read e))
     where
-        options = " " : map show [1..s]
+        options = "" : map show [1..s]
 
 enterPuzzle :: Int -> IO Puzzle
 enterPuzzle s =
