@@ -4,7 +4,6 @@ import System.IO
 import System.Console.ANSI
 import Data.List
 import Data.Maybe
-import Data.Char
 import Puzzle
 import Display
 
@@ -54,7 +53,6 @@ enterPuzzle s =
             | x >= s    = return es
             | otherwise =
                   do
-                      putStrLn (map (maybe ' ' intToDigit . entryInt) es)
                       putStrLn (puzzleToStrWithMarker (fillPartialPuzzle s es) (x, y) '░')
                       e <- getEntry s
                       enterRow (succ x) y (es ++ [e])

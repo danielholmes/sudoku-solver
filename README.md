@@ -5,7 +5,7 @@
 
 ## Development Dependencies
 
- - Stack (tested with version 1.5.1)
+ - [Stack](https://haskellstack.org) (tested with version 1.5.1)
 
 
 ## Setting up development
@@ -18,6 +18,13 @@
 ```bash
 stack build --pedantic
 stack exec sudoku-solver-exe
+```
+
+Interactively:
+
+```bash
+stack build --pedantic
+stack repl
 ```
 
 

@@ -2,7 +2,6 @@ module Display (puzzleToStr, puzzleToStrWithMarker) where
 
 import Puzzle
 import Data.List
-import Data.Char
 
 -- TODO: Can be an instance of Show for puzzle?
 -- Differentiate between entered and fixed ints?
@@ -38,5 +37,6 @@ puzzleToRows p = step 0
 horizontalBorder :: Int -> String
 horizontalBorder s = intercalate "" (replicate (2 * s + 1) "-")
 
+-- Warning: Only works for single digits atm
 rowToChars :: Puzzle -> Int -> String
-rowToChars p y = map (maybe ' ' intToDigit . entryInt) (puzzleRow p y)
+rowToChars p y = map (head . show) (puzzleRow p y)
