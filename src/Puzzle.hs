@@ -1,4 +1,4 @@
-module Puzzle (emptyPuzzle, Puzzle, Entry, puzzleSize, puzzleRow, entryInt) where
+module Puzzle (Puzzle, Entry (Empty, Fixed), puzzleFromEntries, emptyPuzzle, puzzleSize, puzzleRow, entryInt) where
 
 data Entry = Fixed Int
     | Entered Int
@@ -26,6 +26,16 @@ puzzleRow p i
     | otherwise = error ("Row " ++ show i ++ " not found")
         where size = puzzleSize p
 
---isSquare :: Int -> Bool
---isSquare i = s * s == i
---  where s = sqrt i::Floating
+puzzleFromEntries :: [Entry] -> Maybe Puzzle
+puzzleFromEntries es = fmap (\sizeInt -> PuzzleImpl sizeInt es) size
+    where size = getExactSquare (length es)
+
+getExactSquare :: Int -> Maybe Int
+getExactSquare i
+    | s * s == i = Just (fromIntegral s)
+    | otherwise  = Nothing
+        where
+            squarer :: Double
+            squarer = fromIntegral i
+            s :: Int
+            s = truncate (sqrt squarer)

@@ -7,6 +7,6 @@ import Solution
 solverMain :: IO ()
 solverMain = do
     size <- getSudokuSize
-    solution <- solvePuzzle size
+    puzzle <- enterPuzzle size
+    let solution = solve puzzle
     putStrLn (puzzleToStr (solutionPuzzle solution))
-
