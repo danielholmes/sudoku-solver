@@ -38,6 +38,5 @@ stack test --pedantic
 ## TODO:
  - Display fixed vs entered in different colours
  - Try with larger puzzles (16x16)
- - "No solution" should be in red
  - look at all step functions for fold opportunities
  

@@ -16,12 +16,15 @@ module Puzzle (
   rowGroupPositions,
   colGroupPositions,
   internalGroupPosition,
-  groupSize
+  groupSize,
+  availableInts
 ) where
 
-import Data.List.Split
 import Data.List
+import Data.List.Split
+import Data.List.Unique
 import Data.Maybe
+import Data.Set (Set, fromList)
 
 type Slot = Maybe Int
 
@@ -65,8 +68,11 @@ puzzleEntries (PuzzleImpl _ es) = es
 positions :: Puzzle -> [SlotPosition]
 positions (PuzzleImpl s _) = map (puzzleIndexToPosition s) [0..(s * s - 1)]
 
-positionInt :: SlotPosition -> Puzzle -> Maybe Int
-positionInt pos (PuzzleImpl s es) = es !! puzzlePositionToIndex s pos
+positionInt :: Puzzle -> SlotPosition -> Maybe Int
+positionInt (PuzzleImpl s es) pos = es !! puzzlePositionToIndex s pos
+
+availableInts :: Puzzle -> Set Int
+availableInts (PuzzleImpl s _) = fromList [1..s]
 
 puzzleSize :: Puzzle -> Int
 puzzleSize (PuzzleImpl s _) = s
@@ -81,8 +87,16 @@ puzzleRow p i
         where size = puzzleSize p
 
 puzzleFromEntries :: [Slot] -> Maybe Puzzle
-puzzleFromEntries es = fmap (\sizeInt -> PuzzleImpl sizeInt es) size
-    where size = getExactSquare (length es)
+puzzleFromEntries es = rawPuzzle >>= (\p -> if isValid p then Just p else Nothing)
+    where
+        size = getExactSquare (length es)
+        rawPuzzle = fmap (\sizeInt -> PuzzleImpl sizeInt es) size
+
+isValid :: Puzzle -> Bool
+isValid p = all (isValidGroup p) (positionGroups p)
+
+isValidGroup :: Puzzle -> PuzzleGroup -> Bool
+isValidGroup p = allUnique . mapMaybe (positionInt p)
 
 getExactSquare :: Int -> Maybe Int
 getExactSquare i

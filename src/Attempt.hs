@@ -4,7 +4,6 @@ module Attempt (
   beginAttempt,
   attemptPuzzle,
   enterNumber,
-  emptyPositions,
   nextEmptyPosition,
   enteredInt,
   attemptGroups,
@@ -13,10 +12,12 @@ module Attempt (
 ) where
 
 import Puzzle
-import Data.Map
+import Data.Map (Map, keysSet, insert, lookup, fromList, assocs)
 import Data.Generics.Aliases
 import Data.List
 import Data.Maybe
+import Data.Set (Set, lookupGE, filter)
+import Control.Monad (join)
 
 data Attempt = AttemptImpl Puzzle (Map SlotPosition (Maybe Int))
 
@@ -46,12 +47,11 @@ attemptEntered (AttemptImpl _ es) = Data.List.map (\(p,Just i) -> (p,i)) (Data.L
 enterNumber :: Attempt -> SlotPosition -> Int -> Attempt
 enterNumber (AttemptImpl p e) pos i = AttemptImpl p (Data.Map.insert pos (Just i) e)
 
--- TODO: Change to set
-emptyPositions :: Attempt -> [SlotPosition]
-emptyPositions (AttemptImpl _ es) = Prelude.filter (\k -> isNothing (fromJust (Data.Map.lookup k es))) (keys es)
+emptyPositions :: Attempt -> Set SlotPosition
+emptyPositions (AttemptImpl _ es) = Data.Set.filter (\k -> isNothing (fromJust (Data.Map.lookup k es))) (keysSet es)
 
 nextEmptyPosition :: Attempt -> Maybe SlotPosition
-nextEmptyPosition = find (const True) . emptyPositions
+nextEmptyPosition a = Data.Set.lookupGE (0,0) (emptyPositions a)
 
 attemptGroups :: Attempt -> [AttemptGroup]
 attemptGroups a@(AttemptImpl p _) = puzzleGroupsToAttemptGroups a (positionGroups p)
@@ -76,13 +76,7 @@ internalGroup :: Attempt -> (Int, Int) -> AttemptGroup
 internalGroup a@(AttemptImpl p _) pos = puzzleGroupToAttemptGroup a (internalGroupPosition p pos)
 
 intValue :: Attempt -> SlotPosition -> Maybe Int
-intValue a@(AttemptImpl p _) ep = enteredInt a ep `orElse` positionInt ep p
+intValue a@(AttemptImpl p _) ep = enteredInt a ep `orElse` positionInt p ep
 
--- Just for specs atm, TODO: Remove
 enteredInt :: Attempt -> SlotPosition -> Maybe Int
-enteredInt (AttemptImpl _ es) p = value
-    where
-        maybeValue :: Maybe (Maybe Int)
-        maybeValue = Data.Map.lookup p es
-        value :: Maybe Int
-        value = maybeValue >>= id
+enteredInt (AttemptImpl _ es) p = join (Data.Map.lookup p es)

@@ -18,6 +18,31 @@ main = hspec $ do
                     , (0,3), (1,3), (2,3), (3,3)]
             in positions (emptyPuzzle 4) `shouldBe` expected
 
+    describe "Puzzle.puzzleFromEntries" $ do
+        it "should return correct with valid setup" $
+            let
+                es = [Nothing, Just 2, Just 3, Just 4
+                    , Just 3, Just 4, Nothing, Just 2
+                    , Just 2, Just 3, Just 4, Nothing
+                    , Just 4, Nothing, Just 2, Just 3]
+            in isJust (puzzleFromEntries es) `shouldBe` True
+
+        it "should return nothing with non-squared setup" $
+            let
+                es = [Nothing, Just 2, Just 3, Just 4
+                    , Just 3, Just 4, Nothing, Just 2
+                    , Just 2, Just 3, Just 4, Nothing
+                    , Just 4, Nothing]
+            in puzzleFromEntries es `shouldBe` Nothing
+
+        it "should return nothing with invalid setup" $
+            let
+                es = [Nothing, Just 2, Just 3, Just 4
+                    , Just 3, Just 4, Nothing, Just 2
+                    , Just 2, Just 3, Just 4, Nothing
+                    , Just 4, Nothing, Just 3, Just 3]
+            in puzzleFromEntries es `shouldBe` Nothing
+
     describe "Puzzle.positionGroups" $
         it "should return correct and in order" $
             let
@@ -108,7 +133,7 @@ main = hspec $ do
             let
                 es = [Just 3, Nothing, Nothing, Nothing
                     , Nothing, Nothing, Nothing, Just 4
-                    , Just 2, Nothing, Just 2, Nothing
+                    , Just 4, Nothing, Just 2, Nothing
                     , Just 1, Nothing, Nothing, Just 3]
                 a = beginAttempt (fromJust (puzzleFromEntries es))
                 modified = enterNumber a (2, 3) 2
@@ -185,22 +210,23 @@ main = hspec $ do
 
         it "should return false if any empty" $
             let
-                es = [Nothing, Just 2, Just 3, Just 4
+                es = [Nothing, Nothing, Just 3, Just 1
                     , Just 2, Just 3, Just 4, Nothing
-                    , Just 3, Just 4, Nothing, Just 2
-                    , Just 4, Nothing, Just 2, Just 3]
+                    , Just 3, Nothing, Nothing, Just 2
+                    , Just 4, Nothing, Just 1, Just 3]
                 a = beginAttempt (fromJust (puzzleFromEntries es))
             in isSolved a `shouldBe` False
 
         it "should return false for wrong positions" $
             let
-                es = [Nothing, Just 1, Just 3, Just 4
-                    , Just 2, Just 3, Just 4, Just 1
-                    , Just 3, Just 4, Just 1, Just 2
-                    , Just 4, Just 1, Just 2, Just 3]
+                es = [Nothing, Nothing, Just 2, Just 4
+                    , Just 2, Just 4, Just 3, Just 1
+                    , Just 3, Just 1, Just 4, Just 2
+                    , Just 4, Just 2, Just 1, Just 3]
                 a = beginAttempt (fromJust (puzzleFromEntries es))
-                a2 = enterNumber a (0,0) 2
-            in isSolved a2 `shouldBe` False
+                a2 = enterNumber a (0,0) 3
+                a3 = enterNumber a2 (1,0) 1
+            in isSolved a3 `shouldBe` False
 
     describe "Solution.nextEmptyPosition" $ do
         it "should return first for all empty" $
@@ -269,15 +295,6 @@ main = hspec $ do
                     , Just 4, Just 3, Just 2, Just 1]
                 p = fromJust (puzzleFromEntries es)
             in solutionPuzzle (solve p) `shouldBe` Just p
-
-        it "return not solved when in full invalid state" $
-            let
-                es = [Just 3, Just 4, Just 1, Just 2
-                    , Just 1, Just 2, Just 3, Just 4
-                    , Just 2, Just 1, Just 4, Just 3
-                    , Just 4, Just 3, Just 2, Just 4]
-                p = fromJust (puzzleFromEntries es)
-            in solutionPuzzle (solve p) `shouldBe` Nothing
 
         it "return correct solution when only one available" $
             let

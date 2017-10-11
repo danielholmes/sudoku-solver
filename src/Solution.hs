@@ -26,11 +26,10 @@ finishAttempt a
     | otherwise  = nextEmptyPosition a >>= findFirstSolution a
 
 findFirstSolution :: Attempt -> SlotPosition -> Maybe Attempt
-findFirstSolution a ep = step (toList (possibleNext a ep))
+findFirstSolution a ep = Prelude.foldr foldStep Nothing (toList (possibleNext a ep))
     where
-        step :: [Attempt] -> Maybe Attempt
-        step [] = Nothing
-        step (s:ss) = finishAttempt s `orElse` step ss
+        foldStep :: Attempt -> Maybe Attempt -> Maybe Attempt
+        foldStep n c = c `orElse` finishAttempt n
 
 possibleNext :: Attempt -> SlotPosition -> Set Attempt
 possibleNext a ep = Data.Set.map (enterNumber a ep) (possibleValues a ep)
@@ -45,9 +44,8 @@ isSolvedGroup :: AttemptGroup -> Bool
 isSolvedGroup is = not (any isNothing is) && allUnique (Data.List.map fromJust is)
 
 possibleValues :: Attempt -> SlotPosition -> Set Int
-possibleValues a pos = difference availableInts usedInts
+possibleValues a pos = difference available usedInts
     where
         groups = attemptEntryGroups a pos
-        pSize = puzzleSize (attemptPuzzle a)
-        availableInts = fromList [1..pSize]
+        available = availableInts (attemptPuzzle a)
         usedInts = fromList (catMaybes (concat groups))

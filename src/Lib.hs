@@ -3,11 +3,12 @@ module Lib (solverMain) where
 import UI
 import Display
 import Solution
+import Data.Maybe
 
 solverMain :: IO ()
 solverMain = do
     size <- getSudokuSize
     puzzle <- enterPuzzle size
-    let solution = solve puzzle
-        puzzleStr = maybe "No solution" attemptToStr solution
-    putStrLn puzzleStr
+    let solution = fromJust (solve puzzle)
+        solutionStr = attemptToStr solution
+    putStrLn solutionStr
