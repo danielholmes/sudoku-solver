@@ -36,12 +36,8 @@ stack test --pedantic
 
 
 ## TODO:
- - Validate puzzle on input and prevent unsolvable - which groups within fromEntries
  - Display fixed vs entered in different colours
- - Offer a by line entry option
  - Try with larger puzzles (16x16)
- - No solution should be in red
- - 1, 1 rest empty on a 9x9 takes long
-   - Optimise by short circuiting unsolvable Puzzles
+ - "No solution" should be in red
  - look at all step functions for fold opportunities
  

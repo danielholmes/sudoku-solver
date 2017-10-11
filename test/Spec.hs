@@ -293,7 +293,7 @@ main = hspec $ do
                 solution = fromJust (puzzleFromEntries ses)
                 a = beginAttempt solution
                 solutionA = enterNumber a (3,3) 1
-            in solutionAttempt (solve p) `shouldBe` Just solutionA
+            in solve p `shouldBe` Just solutionA
 
     describe "Display.puzzleToStr" $ do
         it "should generate correct empty 4x4" $

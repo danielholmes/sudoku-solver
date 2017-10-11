@@ -4,8 +4,7 @@ module Solution (
   isSolved,
   isSolvedGroup,
   possibleValues,
-  solutionPuzzle,
-  solutionAttempt
+  solutionPuzzle
 ) where
 
 import Puzzle
@@ -16,35 +15,28 @@ import Data.List.Unique
 import Data.List (map)
 import Data.Set
 
-data Solution = Solved Attempt
-    | NotSolvable
+type Solution = Maybe Attempt
 
 solve :: Puzzle -> Solution
 solve = finishAttempt . beginAttempt
 
 finishAttempt :: Attempt -> Solution
 finishAttempt a
-    | isSolved a = Solved a
-    | otherwise  = maybe NotSolvable Solved nextSolution
-        where
-            nextSolution = nextEmptyPosition a >>= findFirstSolution a
+    | isSolved a = Just a
+    | otherwise  = nextEmptyPosition a >>= findFirstSolution a
 
 findFirstSolution :: Attempt -> SlotPosition -> Maybe Attempt
 findFirstSolution a ep = step (toList (possibleNext a ep))
     where
         step :: [Attempt] -> Maybe Attempt
         step [] = Nothing
-        step (s:ss) = solutionAttempt (finishAttempt s) `orElse` step ss
+        step (s:ss) = finishAttempt s `orElse` step ss
 
 possibleNext :: Attempt -> SlotPosition -> Set Attempt
 possibleNext a ep = Data.Set.map (enterNumber a ep) (possibleValues a ep)
 
-solutionAttempt :: Solution -> Maybe Attempt
-solutionAttempt (Solved a) = Just a
-solutionAttempt NotSolvable = Nothing
-
 solutionPuzzle :: Solution -> Maybe Puzzle
-solutionPuzzle s = fmap attemptPuzzle (solutionAttempt s)
+solutionPuzzle = fmap attemptPuzzle
 
 isSolved :: Attempt -> Bool
 isSolved = all isSolvedGroup . attemptGroups
