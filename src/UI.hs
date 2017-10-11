@@ -31,13 +31,13 @@ getIntOption o prompt =
 getSudokuSize :: IO Int
 getSudokuSize = getIntOption [4, 9] (Just "What size Sudoku Puzzle would you like?")
 
-getEntry :: Int -> IO Entry
+getEntry :: Int -> IO Slot
 getEntry s =
     do
         o <- getOption options Nothing
         return (case o of
-            "" -> Empty
-            e -> Fixed (read e))
+            "" -> Nothing
+            e -> Just (read e))
     where
         options = "" : map show [1..s]
 
@@ -48,7 +48,7 @@ enterPuzzle s =
         let puzzle = puzzleFromEntries es
         return (fromJust puzzle)
     where
-        enterRow :: Int -> Int -> [Entry] -> IO [Entry]
+        enterRow :: Int -> Int -> [Slot] -> IO [Slot]
         enterRow x y es
             | x >= s    = return es
             | otherwise =
@@ -57,7 +57,7 @@ enterPuzzle s =
                       e <- getEntry s
                       enterRow (succ x) y (es ++ [e])
 
-        enterRows :: Int -> [Entry] -> IO [Entry]
+        enterRows :: Int -> [Slot] -> IO [Slot]
         enterRows y es
             | y >= s    = return es
             | otherwise =
@@ -65,6 +65,6 @@ enterPuzzle s =
                       r <- enterRow 0 y es
                       enterRows (succ y) r
 
-fillPartialPuzzle :: Int -> [Entry] -> Puzzle
-fillPartialPuzzle s es = fromJust (puzzleFromEntries (es ++ replicate numLeft Empty))
+fillPartialPuzzle :: Int -> [Slot] -> Puzzle
+fillPartialPuzzle s es = fromJust (puzzleFromEntries (es ++ replicate numLeft Nothing))
     where numLeft = s * s - length es

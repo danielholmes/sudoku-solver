@@ -17,6 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Lib
                      , Puzzle
+                     , Attempt
                      , Display
                      , Solution
   other-modules:       UI

@@ -1,7 +1,9 @@
-module Display (puzzleToStr, puzzleToStrWithMarker) where
+module Display (puzzleToStr, puzzleToStrWithMarker, attemptToStr) where
 
 import Puzzle
+import Attempt
 import Data.List
+import Data.Char
 
 -- TODO: Can be an instance of Show for puzzle?
 -- Differentiate between entered and fixed ints?
@@ -39,4 +41,26 @@ horizontalBorder s = intercalate "" (replicate (2 * s + 1) "-")
 
 -- Warning: Only works for single digits atm
 rowToChars :: Puzzle -> Int -> String
-rowToChars p y = map (head . show) (puzzleRow p y)
+rowToChars p y = map entryToChar (puzzleRow p y)
+
+entryToChar :: Slot -> Char
+entryToChar (Just i) = intToChar i
+entryToChar Nothing = ' '
+
+intToChar :: Int -> Char
+intToChar = intToDigit
+
+attemptToStr :: Attempt -> String
+attemptToStr a = rowCharsToStr eRows
+    where
+        p = attemptPuzzle a
+        rows = puzzleToRows p
+
+        foldStep :: (SlotPosition, Int) -> [String] -> [String]
+        foldStep ((x,y), i) rs = beforeRows ++ modifiedRow : afterRows
+            where
+                (beforeRows,row:afterRows) = splitAt y rs
+                (beforeCols,_:afterCols) = splitAt x row
+                modifiedRow = beforeCols ++ intToChar i : afterCols
+
+        eRows = foldr foldStep rows (attemptEntered a)
